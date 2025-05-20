@@ -24,9 +24,6 @@
       --shadow-card: 0 0 18px #37ecf390, 0 0px 3px #ffe74c71;
       --card-radius: 14px;
       --btn-bg: #272844;
-      --btn-yellow: #ffe74c;
-      --btn-pink: #ff75d9;
-      --btn-blue: #51d3f4;
       --header-gradient: linear-gradient(90deg,#51d3f4 0%,#51d3f4 100%);
     }
     body {margin: 0;font-family: "Segoe UI", "Montserrat", "Arial", sans-serif;background: var(--bg-dark);color: var(--pm-text);min-height: 100vh;}
@@ -68,7 +65,7 @@
     .popup .file-title {margin-top: 0.13em;margin-bottom: .18em;color: var(--pm-yellow);font-size: 1.16em;font-weight: bold;text-shadow: 0 2px 8px #ffe74c30;}
     .popup .file-meta {margin-bottom:0.7em;}
     .popup .file-desc {margin-bottom:1.11em;}
-    #uploadSec, #homeSec, #accountSec, #loginSec {display: none;background: var(--bg-box);border-radius: 21px;min-height: 200px;box-shadow: 0 2px 30px #08131e99;margin: 2.2em auto 2em auto;padding: 2.2em 1.1em 2em 1.1em;max-width: 950px;}
+    #uploadSec, #homeSec, #accountSec, #loginSec, #registerSec {display: none;background: var(--bg-box);border-radius: 21px;min-height: 200px;box-shadow: 0 2px 30px #08131e99;margin: 2.2em auto 2em auto;padding: 2.2em 1.1em 2em 1.1em;max-width: 950px;}
     label {font-weight: 600;color: var(--pm-blue);margin-bottom: .2em;display: block;font-size:1em;}
     input[type="text"], input[type="password"], textarea {width: 97.5%;padding: 0.65em 8px;border: 1.7px solid var(--pm-yellow);border-radius: 9px;font-size: 1em;outline: none;margin-bottom: .25em;background: #222637;color: var(--pm-yellow);font-weight: 500;font-family: inherit;}
     textarea {min-height:40px;resize:vertical;}
@@ -90,7 +87,7 @@
       main{max-width:100vw;padding-left:0;padding-right:0;}
       .section-projects{max-width:100vw;}
       .carousel-scroll{gap:12px;}
-      #uploadSec, #homeSec, #accountSec, #loginSec{margin:14px 0;padding: 0.5em 0.2em 1.4em 0.2em;}
+      #uploadSec, #homeSec, #accountSec, #loginSec, #registerSec{margin:14px 0;padding: 0.5em 0.2em 1.4em 0.2em;}
       .section-title{font-size:1em;}
     }
     .carousel-scroll {
@@ -149,11 +146,81 @@
       <div id="noFilesMsg" style="margin-top:1em;text-align:center;color:var(--pm-text2);font-size:1.07em;"></div>
       <div id="errHome" class="error-message" style="display:none"></div>
     </section>
-    <!-- Las secciones de upload, account, login, register siguen igual sin cambios: puedes poner tu HTML original aquí -->
-    <section id="uploadSec"></section>
-    <section id="accountSec"></section>
-    <section id="loginSec"></section>
-    <section id="registerSec" style="display:none;"></section>
+    <section id="uploadSec">
+      <div class="account-area" id="mustLoginMsg"></div>
+      <h2 class="section-title" style="font-size:1.13em;margin-bottom:18px;">⬆️ Upload your .pmp file (uses GitHub)</h2>
+      <div id="tokeninfo">
+        All uploads are processed and stored via PenguinMod's cloud worker server.<br>
+        <small>Do not upload illegal or inappropriate content.</small>
+      </div>
+      <form id="uploadForm" autocomplete="off">
+        <div class="form-row">
+          <label for="pmpFile">.pmp file</label>
+          <input type="file" id="pmpFile" accept=".pmp" required>
+        </div>
+        <div class="form-row">
+          <label for="miniatura">Thumbnail (.jpg, .png or .gif)</label>
+          <input type="file" id="miniatura" accept="image/png,image/jpeg,image/gif" required>
+        </div>
+        <div class="form-row">
+          <label for="titulo">Title</label>
+          <input type="text" id="titulo" maxlength="48" required>
+        </div>
+        <div class="form-row">
+          <label for="autor">Author</label>
+          <input type="text" id="autor" maxlength="32" required disabled placeholder="Set by account login.">
+        </div>
+        <div class="form-row">
+          <label for="desc">Description</label>
+          <textarea id="desc" maxlength="240" required></textarea>
+        </div>
+        <div class="form-row">
+          <label for="tags">Tags <small>(comma separated, e.g: game,featured)</small></label>
+          <input type="text" id="tags" maxlength="128">
+        </div>
+        <div class="form-actions"><button type="submit">Upload project</button></div>
+        <div class="msg" id="uploadMsg"></div>
+      </form>
+    </section>
+    <section id="accountSec">
+      <h2 class="section-title">Account</h2>
+      <div class="account-btns">
+        <button onclick="showLogin()">Login</button>
+        <button onclick="showRegister()">Register</button>
+        <button onclick="logout()">Logout</button>
+      </div>
+      <div id="loggedStatus"></div>
+    </section>
+    <section id="loginSec">
+      <h3 class="section-title">Sign In</h3>
+      <form id="loginForm">
+        <div class="form-row">
+          <label for="loginName">Username</label>
+          <input type="text" id="loginName" maxlength="32" required autocomplete="username">
+        </div>
+        <div class="form-row">
+          <label for="loginPw">Password</label>
+          <input type="password" id="loginPw" required autocomplete="current-password">
+        </div>
+        <div class="form-actions"><button type="submit">Login</button></div>
+        <div class="msg" id="loginMsg"></div>
+      </form>
+    </section>
+    <section id="registerSec">
+      <h3 class="section-title">Register Account</h3>
+      <form id="registerForm">
+        <div class="form-row">
+          <label for="regName">Username</label>
+          <input type="text" id="regName" maxlength="32" required>
+        </div>
+        <div class="form-row">
+          <label for="regPw">Password</label>
+          <input type="password" id="regPw" required>
+        </div>
+        <div class="form-actions"><button type="submit">Register</button></div>
+        <div class="msg" id="registerMsg"></div>
+      </form>
+    </section>
   </main>
   <div class="popup-bg" id="popupBg">
     <div class="popup" id="popupCard">
@@ -173,249 +240,437 @@
   </div>
   <footer style="background:var(--bg-dark2);color:var(--pm-text2);text-align:center;padding:2em 0 1em 0;margin-top:3em;font-size:1em;">
     PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation.
-    <div style="display:flex;gap:18px;justify-content:center;margin-top:1.3em;flex-wrap:wrap;">
-      <div><b>Website</b><br>
-        <a href="https://studio.penguinmod.com/editor.html" class="carousel-link" style="font-size:.99em;">Editor</a><br>
-        <a href="https://studio.penguinmod.com/credits.html" class="carousel-link" style="font-size:.99em;">Credits</a><br>
-        <a href="https://github.com/PenguinMod/" class="carousel-link" style="font-size:.99em;">Source</a>
-      </div>
-      <div><b>Community</b><br>
-        <a href="https://github.com/PenguinMod/PenguinMod-Home/issues" class="carousel-link" style="font-size:.99em;">Report an issue</a><br>
-        <a href="https://wiki.penguinmod.com/wiki/Main_Page" class="carousel-link" style="font-size:.99em;">Community Wiki</a>
-      </div>
-      <div><b>Donate</b><br>
-        <a href="/donate" class="carousel-link" style="font-size:.99em;">PenguinMod</a><br>
-        <a href="https://github.com/sponsors/GarboMuffin" class="carousel-link" style="font-size:.99em;">TurboWarp</a>
-      </div>
-    </div>
   </footer>
   <script>
-    // --- VOTOS POR LOCALSTORAGE ---
-    function getVotes() {
-      return JSON.parse(localStorage.getItem('penguinmod_votes')||'{}');
-    }
-    function saveVotes(votes) {
-      localStorage.setItem('penguinmod_votes', JSON.stringify(votes));
-    }
-    function getVoteForProject(id) {
-      return getVotes()[id] || null;
-    }
-    function voteProject(id, type) {
-      let votes = getVotes();
-      votes[id] = type; // 'like' o 'dislike'
-      saveVotes(votes);
-    }
-    function countVotes(arr, id) {
-      let voteData = JSON.parse(localStorage.getItem('penguinmod_votes_data')||'{}');
-      let like = 0, dislike = 0;
-      if (voteData[id]) {
-        like = voteData[id].like || 0;
-        dislike = voteData[id].dislike || 0;
-      }
-      let myVote = getVoteForProject(id);
-      if(myVote == 'like') like ++;
-      if(myVote == 'dislike') dislike ++;
-      return {like, dislike, score: like-dislike, total:like+dislike};
-    }
-    // --- CUENTAS Y SESIÓN ---
-    let account = null;
-    function getAccountLocal() {
+const WORKER_API = "https://royal-term-e73b.arielcapdevilagarcia.workers.dev/";
+const METAFILE = "proyectos.json";
+const ACCOUNTS_JSON = "accounts.json";
+let account = null;
+// --- VOTOS ONLINE ---
+async function fetchAllVotes(projectIds) {
+  const votes = {};
+  await Promise.all(projectIds.map(async id => {
+    try {
+      const r = await fetch(`${WORKER_API}?file=votes/${id}.json`);
+      if (r.ok) {
+        let obj = await r.json();
+        if(obj && obj.content && obj.encoding === "base64")
+          obj = JSON.parse(atob(obj.content.replace(/\n/g,"")));
+        votes[id] = obj;
+      } else votes[id] = {likes:0,dislikes:0};
+    } catch { votes[id] = {likes:0,dislikes:0}; }
+  }));
+  return votes;
+}
+function getVoteForProject(id) {
+  return (JSON.parse(localStorage.getItem('penguinmod_votes')||'{}'))[id]||null;
+}
+function saveVoteForProject(id, type) {
+  let d = JSON.parse(localStorage.getItem('penguinmod_votes')||'{}');
+  d[id] = type;
+  localStorage.setItem('penguinmod_votes', JSON.stringify(d));
+}
+async function sendVoteOnline(project, vote) {
+  await fetch(WORKER_API + "vote", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ project, vote })
+  });
+}
+async function workerDownloadProjects() {
+  try {
+    let r = await fetch(WORKER_API + "?file=proyectos.json");
+    if(!r.ok) return [];
+    const obj = await r.json();
+    if (Array.isArray(obj)) return obj;
+    if (typeof obj === "object" && obj.content && obj.encoding==="base64") {
+      const txt = atob(obj.content.replace(/\n/g,''));
       try {
-        account = JSON.parse(localStorage.getItem("penguinmod_account")||"{}");
-        return account && account.username ? account : null;
-      } catch(e) { return null; }
+        const arr = JSON.parse(txt);
+        if(Array.isArray(arr)) return arr;
+        return [];
+      } catch (e) { return []; }
     }
-    function updateAccountBar() {
-      const bar = document.getElementById("accountBar");
-      if(getAccountLocal()) {
-        bar.innerHTML = 'Signed in as <b>'+account.username+'</b> <button onclick="logout()">Logout</button>';
-      } else {
-        bar.innerHTML = 'Not signed in. <button onclick="showLogin()">Login</button> <button onclick="showRegister()">Register</button>';
+    return [];
+  } catch(e) { return []; }
+}
+async function listProjects() {
+  let arr=[];
+  let msg = document.getElementById("noFilesMsg");
+  let errMsg = document.getElementById("errHome");
+  document.getElementById("latestCarousel").innerHTML = "";
+  document.getElementById("featuredCarousel").innerHTML = "";
+  document.getElementById("gamesCarousel").innerHTML = "";
+  document.getElementById("recentCarousel").innerHTML = "";
+  msg.innerHTML = "Loading...";
+  try { arr = await workerDownloadProjects(); } catch(e) {
+    msg.innerHTML = "No projects or could not connect.<br>"+e;
+    errMsg.style.display = "block";
+    errMsg.innerText = e;
+    return;
+  }
+  if(!Array.isArray(arr)||arr.length===0) {
+    msg.innerHTML = "No projects yet. Be the first to upload!";
+    return;
+  }
+  msg.innerHTML = "";
+  const votesObj = await fetchAllVotes(arr.map(p=>p.id));
+  arr.forEach(project => {
+    const v = votesObj[project.id]||{likes:0,dislikes:0};
+    project.votes_like = v.likes;
+    project.votes_dislike = v.dislikes;
+    project.votes_total = v.likes + v.dislikes;
+  });
+  let latest = arr.filter(p=>p.votes_total>25).slice(0,14);
+  let featured = arr.filter(p=>p.votes_total>10 && p.votes_total<=25).slice(0,12);
+  let games = arr.filter(
+    p=>((typeof p.tags==="string"?p.tags:Array.isArray(p.tags)?p.tags.join():"").toLowerCase().includes("game"))
+  ).slice(0,12);
+  let recent = arr.slice(0,10);
+  renderCarousel(latest, document.getElementById("latestCarousel"), "latest");
+  renderCarousel(featured, document.getElementById("featuredCarousel"), "featured");
+  renderCarousel(games, document.getElementById("gamesCarousel"), "games");
+  renderCarousel(recent, document.getElementById("recentCarousel"), "recent");
+}
+function renderCarousel(arr, cont, styleClass) {
+  if(!arr||!arr.length) { cont.innerHTML = "<div style='color:#464f64;text-align:center;font-size:1em;padding:1em;'>No projects</div>"; return; }
+  cont.innerHTML = "";
+  arr.forEach(function(proj){
+    const card = document.createElement("div");
+    card.className = "card-project " + styleClass;
+    card.onclick = ()=>showDownloadPopup(proj.id, arr);
+    const img = document.createElement("img");
+    img.className = "card-thumb";
+    img.src = proj.thumb;
+    img.alt = "Thumbnail";
+    const titleDiv = document.createElement("div");
+    titleDiv.className = "card-title";
+    titleDiv.innerText = proj.title;
+    const meta = document.createElement("div");
+    meta.className = "card-meta";
+    meta.innerHTML = `<span class="card-author">${proj.author ? proj.author : "?"}</span>
+     • <span>${proj.time ? formatShortDate(proj.time) : ""}</span>`;
+    const descDiv = document.createElement("div");
+    descDiv.className = "card-desc";
+    descDiv.innerText = proj.desc.length>62?proj.desc.slice(0,62)+"…":proj.desc;
+    card.appendChild(img);
+    card.appendChild(titleDiv);
+    card.appendChild(meta);
+    card.appendChild(descDiv);
+    cont.appendChild(card);
+  });
+}
+function formatShortDate(ts){
+  if(!ts) return "";
+  let d = new Date(ts);
+  return d.toLocaleDateString([],{month:"short",day:"numeric"}) +
+    " " + d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+}
+let currentProj = null, currentArr = null, currentVotes = {likes:0,dislikes:0};
+async function updatePopupVotesDisplay(proj) {
+  try {
+    const r = await fetch(`${WORKER_API}?file=votes/${proj.id}.json`);
+    if (r.ok) {
+      let obj = await r.json();
+      if(obj && obj.content && obj.encoding === "base64") {
+        obj = JSON.parse(atob(obj.content.replace(/\n/g,"")));
       }
+      currentVotes = obj || {likes:0,dislikes:0};
+    } else {
+      currentVotes = {likes:0,dislikes:0};
     }
-    // --- NAVEGACIÓN ---
-    function showSection(sec) {
-      document.getElementById("homeSec").style.display = sec==="home" ? "block" : "none";
-      document.getElementById("uploadSec").style.display = sec==="upload" ? "block" : "none";
-      document.getElementById("accountSec").style.display = sec==="account" ? "block" : "none";
-      document.getElementById("loginSec").style.display = "none";
-      document.getElementById("registerSec").style.display = "none";
-      document.getElementById("btnHome").classList.toggle("active", sec==="home");
-      document.getElementById("btnUpload").classList.toggle("active", sec==="upload");
-      document.getElementById("btnAccount").classList.toggle("active", sec==="account");
-      document.getElementById("errHome").style.display = "none";
-      if(sec==="home") { updateAccountBar(); listProjects(); }
-      // ... otras secciones igual ...
-    }
-    document.getElementById("btnHome").onclick = ()=>showSection("home");
-    document.getElementById("btnUpload").onclick = ()=>showSection("upload");
-    document.getElementById("btnAccount").onclick = ()=>showSection("account");
-    // --- PROYECTOS ---
-    const WORKER_API = "https://royal-term-e73b.arielcapdevilagarcia.workers.dev/";
-    const METAFILE = "proyectos.json";
-    async function workerDownloadProjects() {
+  } catch {
+    currentVotes = {likes:0,dislikes:0};
+  }
+  document.getElementById('popupVoteCount').innerText = `👍 ${currentVotes.likes||0}  👎 ${currentVotes.dislikes||0}  (${(currentVotes.likes||0)+(currentVotes.dislikes||0)} votes)`;
+  let myVote = getVoteForProject(proj.id);
+  document.getElementById('popupVoteStatus').innerText = (myVote==='like' ? "You liked this." : myVote==='dislike'?"You disliked this.":"You haven't voted.");
+  document.getElementById('popupLikeBtn').disabled = myVote==='like';
+  document.getElementById('popupDislikeBtn').disabled = myVote==='dislike';
+}
+function showDownloadPopup(id, arr) {
+  const p = (arr||[]).find(x=>x.id===id);
+  if(!p) return;
+  currentProj = p;
+  currentArr = arr;
+  document.getElementById("popupThumb").src = p.thumb;
+  document.getElementById("popupTitle").innerText = p.title;
+  document.getElementById("popupAuthor").innerText = p.author||"Anonymous";
+  document.getElementById("popupTime").innerText = formatShortDate(p.time||Date.now());
+  document.getElementById("popupDesc").innerText = p.desc;
+  updatePopupVotesDisplay(p);
+  document.getElementById("popupBg").style.display = "flex";
+}
+document.getElementById("popupLikeBtn").onclick = async function(ev){
+  if(!currentProj) return;
+  let myVote = getVoteForProject(currentProj.id);
+  if(myVote === 'like') return;
+  saveVoteForProject(currentProj.id, 'like');
+  await sendVoteOnline(currentProj.id, 'like');
+  await updatePopupVotesDisplay(currentProj);
+  listProjects();
+};
+document.getElementById("popupDislikeBtn").onclick = async function(ev){
+  if(!currentProj) return;
+  let myVote = getVoteForProject(currentProj.id);
+  if(myVote === 'dislike') return;
+  saveVoteForProject(currentProj.id, 'dislike');
+  await sendVoteOnline(currentProj.id, 'dislike');
+  await updatePopupVotesDisplay(currentProj);
+  listProjects();
+};
+document.getElementById("popupDownloadBtn").onclick = function(){
+  if(!currentProj) return;
+  downloadPMPviaWorker(currentProj.pmpFile, currentProj.pmpName||"penguinmod-project.pmp");
+};
+function closePopup() {
+  document.getElementById("popupBg").style.display = "none";
+  currentProj = null; currentArr = null;
+}
+document.getElementById("popupBg").onclick = function(ev){
+  if(ev.target===this) closePopup();
+};
+function showSection(sec) {
+  document.getElementById("homeSec").style.display = sec==="home" ? "block" : "none";
+  document.getElementById("uploadSec").style.display = sec==="upload" ? "block" : "none";
+  document.getElementById("accountSec").style.display = sec==="account" ? "block" : "none";
+  document.getElementById("loginSec").style.display = "none";
+  document.getElementById("registerSec").style.display = "none";
+  document.getElementById("btnHome").classList.toggle("active", sec==="home");
+  document.getElementById("btnUpload").classList.toggle("active", sec==="upload");
+  document.getElementById("btnAccount").classList.toggle("active", sec==="account");
+  document.getElementById("errHome").style.display = "none";
+  if(sec==="home") { updateAccountBar(); listProjects(); }
+  if(sec==="upload") { showUploadAuth(); document.getElementById('uploadMsg').innerText = ""; }
+  if(sec==="account") updateAccountStatus();
+}
+document.getElementById("btnHome").onclick = ()=>showSection("home");
+document.getElementById("btnUpload").onclick = ()=>showSection("upload");
+document.getElementById("btnAccount").onclick = ()=>showSection("account");
+function saveAccountLocal(acc) {
+  account = acc;
+  localStorage.setItem("penguinmod_account", JSON.stringify(account || {}));
+}
+function getAccountLocal() {
+  try {
+    account = JSON.parse(localStorage.getItem("penguinmod_account")||"{}");
+    return account && account.username ? account : null;
+  } catch(e) { return null; }
+}
+function updateAccountBar() {
+  const bar = document.getElementById("accountBar");
+  if(getAccountLocal()) {
+    bar.innerHTML = 'Signed in as <b>'+account.username+'</b> <button onclick="logout()">Logout</button>';
+  } else {
+    bar.innerHTML = 'Not signed in. <button onclick="showLogin()">Login</button> <button onclick="showRegister()">Register</button>';
+  }
+}
+function logout() {
+  saveAccountLocal(null);
+  updateAccountBar();
+  showSection('home');
+}
+function showLogin() {
+  hideAllSections();
+  document.getElementById("loginSec").style.display = "block";
+  document.getElementById("loginMsg").innerText = "";
+}
+function showRegister() {
+  hideAllSections();
+  document.getElementById("registerSec").style.display = "block";
+  document.getElementById("registerMsg").innerText = "";
+}
+function hideAllSections() {
+  document.getElementById("homeSec").style.display = "none";
+  document.getElementById("uploadSec").style.display = "none";
+  document.getElementById("accountSec").style.display = "none";
+  document.getElementById("loginSec").style.display = "none";
+  document.getElementById("registerSec").style.display = "none";
+}
+function updateAccountStatus() {
+  const s = document.getElementById("loggedStatus");
+  let acc = getAccountLocal();
+  if(acc && acc.username) {
+    s.innerHTML = `You are signed in as <b>${acc.username}</b>.`;
+  } else {
+    s.innerHTML = `Not signed in.`;
+  }
+}
+async function workerDownloadAccounts() {
+  try {
+    let r = await fetch(WORKER_API + "?file="+encodeURIComponent(ACCOUNTS_JSON));
+    if (!r.ok) return [];
+    const obj = await r.json();
+    if (Array.isArray(obj)) return obj;
+    if (typeof obj === 'object' && obj.content && obj.encoding === 'base64') {
+      const txt = atob(obj.content.replace(/\n/g, ''));
       try {
-        let r = await fetch(WORKER_API + "?file="+encodeURIComponent(METAFILE));
-        if(!r.ok) return [];
-        const obj = await r.json();
-        if (Array.isArray(obj)) return obj;
-        if (typeof obj === "object" && obj.content && obj.encoding==="base64") {
-          const txt = atob(obj.content.replace(/\n/g,''));
-          try {
-            const arr = JSON.parse(txt);
-            if(Array.isArray(arr)) return arr;
-            return [];
-          } catch (e) { return []; }
-        }
+        const arr = JSON.parse(txt);
+        if (Array.isArray(arr)) return arr;
         return [];
       } catch(e) { return []; }
     }
-    async function listProjects() {
-      let arr=[];
-      let msg = document.getElementById("noFilesMsg");
-      let errMsg = document.getElementById("errHome");
-      document.getElementById("latestCarousel").innerHTML = "";
-      document.getElementById("featuredCarousel").innerHTML = "";
-      document.getElementById("gamesCarousel").innerHTML = "";
-      document.getElementById("recentCarousel").innerHTML = "";
-      msg.innerHTML = "Loading...";
-      try { arr = await workerDownloadProjects(); } catch(e) {
-        msg.innerHTML = "No projects or could not connect.<br>"+e;
-        errMsg.style.display = "block";
-        errMsg.innerText = e;
-        return;
-      }
-      if(!Array.isArray(arr)||arr.length===0) {
-        msg.innerHTML = "No projects yet. Be the first to upload!";
-        return;
-      }
-      msg.innerHTML = "";
-      arr.forEach(function(proj){
-        let c = countVotes(arr, proj.id);
-        proj.votes_like = c.like;
-        proj.votes_dislike = c.dislike;
-        proj.votes_total = c.total;
-      });
-      // Filtrar según tus reglas:
-      let latest = arr.filter(p=>p.votes_total>25).slice(0,14);
-      let featured = arr.filter(p=>p.votes_total>10 && p.votes_total<=25).slice(0,12);
-      let games = arr.filter(
-        p=>((typeof p.tags==="string"?p.tags:Array.isArray(p.tags)?p.tags.join():"").toLowerCase().includes("game"))
-      ).slice(0,12);
-      let recent = arr.slice(0,10);
-      renderCarousel(latest, document.getElementById("latestCarousel"), "latest");
-      renderCarousel(featured, document.getElementById("featuredCarousel"), "featured");
-      renderCarousel(games, document.getElementById("gamesCarousel"), "games");
-      renderCarousel(recent, document.getElementById("recentCarousel"), "recent");
+    return [];
+  } catch(e) { return []; }
+}
+document.getElementById("registerForm").onsubmit = async function(ev) {
+  ev.preventDefault();
+  const username = document.getElementById("regName").value.trim();
+  const pw = document.getElementById("regPw").value;
+  const msg = document.getElementById("registerMsg");
+  msg.innerText = "Registering...";
+  if(!username || !pw) return msg.innerText = "Fill all fields";
+  let result;
+  try {
+    let resp = await fetch(WORKER_API + "register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, pass: pw })
+    });
+    result = await resp.json();
+    if(resp.ok) {
+      msg.innerText = "Account created. You can now login.";
+    } else {
+      msg.innerText = (result.error || JSON.stringify(result));
     }
-    function renderCarousel(arr, cont, styleClass) {
-      if(!arr || !arr.length) { cont.innerHTML = "<div style='color:#464f64;text-align:center;font-size:1em;padding:1em;'>No projects</div>"; return; }
-      cont.innerHTML = "";
-      arr.forEach(function(proj){
-        const card = document.createElement("div");
-        card.className = "card-project " + styleClass;
-        card.onclick = ()=>showDownloadPopup(proj.id, arr);
-        const img = document.createElement("img");
-        img.className = "card-thumb";
-        img.src = proj.thumb;
-        img.alt = "Thumbnail";
-        const titleDiv = document.createElement("div");
-        titleDiv.className = "card-title";
-        titleDiv.innerText = proj.title;
-        const meta = document.createElement("div");
-        meta.className = "card-meta";
-        meta.innerHTML = `<span class="card-author">${proj.author ? proj.author : "?"}</span>
-         • <span>${proj.time ? formatShortDate(proj.time) : ""}</span>`;
-        const descDiv = document.createElement("div");
-        descDiv.className = "card-desc";
-        descDiv.innerText = proj.desc.length>62?proj.desc.slice(0,62)+"…":proj.desc;
-        card.appendChild(img);
-        card.appendChild(titleDiv);
-        card.appendChild(meta);
-        card.appendChild(descDiv);
-        cont.appendChild(card);
-      });
-    }
-    function formatShortDate(ts){
-      if(!ts) return "";
-      let d = new Date(ts);
-      return d.toLocaleDateString([],{month:"short",day:"numeric"}) +
-        " " + d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
-    }
-    // --- POPUP ---
-    let currentProj = null, currentArr=null;
-    function updatePopupVotesDisplay(proj) {
-      let c = countVotes([], proj.id);
-      let myVote = getVoteForProject(proj.id);
-      document.getElementById('popupVoteCount').innerText = `👍 ${c.like}  👎 ${c.dislike}  (${c.total} votes)`;
-      document.getElementById('popupVoteStatus').innerText = (myVote==='like' ? "You liked this." : myVote==='dislike'?"You disliked this.":"You haven't voted.");
-      document.getElementById('popupLikeBtn').disabled = myVote==='like';
-      document.getElementById('popupDislikeBtn').disabled = myVote==='dislike';
-    }
-    function showDownloadPopup(id, arr) {
-      const p = (arr||[]).find(x=>x.id===id);
-      if(!p) return;
-      currentProj = p;
-      currentArr = arr;
-      document.getElementById("popupThumb").src = p.thumb;
-      document.getElementById("popupTitle").innerText = p.title;
-      document.getElementById("popupAuthor").innerText = p.author||"Anonymous";
-      document.getElementById("popupTime").innerText = formatShortDate(p.time||Date.now());
-      document.getElementById("popupDesc").innerText = p.desc;
-      updatePopupVotesDisplay(p);
-      document.getElementById("popupBg").style.display = "flex";
-    }
-    document.getElementById("popupLikeBtn").onclick = function(ev){
-      if(!currentProj) return;
-      voteProject(currentProj.id, 'like');
-      let d = JSON.parse(localStorage.getItem('penguinmod_votes_data')||'{}');
-      d[currentProj.id] = d[currentProj.id]||{like:0,dislike:0};
-      d[currentProj.id].like = (d[currentProj.id].like||0)+1;
-      localStorage.setItem('penguinmod_votes_data', JSON.stringify(d)); // DEMO
-      updatePopupVotesDisplay(currentProj);
-      listProjects();
-    }
-    document.getElementById("popupDislikeBtn").onclick = function(ev){
-      if(!currentProj) return;
-      voteProject(currentProj.id, 'dislike');
-      let d = JSON.parse(localStorage.getItem('penguinmod_votes_data')||'{}');
-      d[currentProj.id] = d[currentProj.id]||{like:0,dislike:0};
-      d[currentProj.id].dislike = (d[currentProj.id].dislike||0)+1;
-      localStorage.setItem('penguinmod_votes_data', JSON.stringify(d)); // DEMO
-      updatePopupVotesDisplay(currentProj);
-      listProjects();
-    }
-    document.getElementById("popupDownloadBtn").onclick = function(){
-      if(!currentProj) return;
-      downloadPMPviaWorker(currentProj.pmpFile, currentProj.pmpName||"penguinmod-project.pmp");
-    }
-    function closePopup() {
-      document.getElementById("popupBg").style.display = "none";
-      currentProj = null; currentArr = null;
-    }
-    document.getElementById("popupBg").onclick = function(ev){
-      if(ev.target===this) closePopup();
-    }
-    // --- DESCARGA .PMP ---
-    async function downloadPMPviaWorker(pmpFile, filename) {
-      try {
-        let resp = await fetch(WORKER_API + "?file=" + encodeURIComponent(pmpFile));
-        if(resp.ok) {
-          let blob = await resp.blob();
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(blob);
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          setTimeout(()=>a.remove(),99);
-        }else{
-          alert("Could not download the file.");
-        }
-      }catch(e){
-        alert("Could not download the file.");
-      }
-    }
+  } catch(e) {
+    msg.innerText = "Error: " + (e.message||e);
+  }
+};
+document.getElementById("loginForm").onsubmit = async function(ev) {
+  ev.preventDefault();
+  const username = document.getElementById("loginName").value.trim();
+  const pw = document.getElementById("loginPw").value;
+  const msg = document.getElementById("loginMsg");
+  msg.innerText = "Logging in...";
+  let accounts = await workerDownloadAccounts();
+  if(!Array.isArray(accounts)) accounts = [];
+  const pwHash = await sha256hex(pw);
+  const acc = accounts.find(x=>x.username === username && x.pass === pwHash);
+  if(acc) {
+    saveAccountLocal({username});
+    msg.innerText = "Logged in!";
     showSection("home");
+    updateAccountBar();
+  } else {
+    msg.innerText = "Login failed (wrong user/pass, or server down).";
+  }
+};
+function showUploadAuth() {
+  const acc = getAccountLocal();
+  document.getElementById('mustLoginMsg').innerHTML =
+    acc && acc.username
+      ? "<b>Logged in as</b>: "+acc.username
+      : "You must be logged in to upload a project.";
+  document.getElementById('uploadForm').style.display = acc && acc.username ? "block" : "none";
+  document.getElementById('autor').value = acc && acc.username ? acc.username : "";
+}
+function fileToBase64(file, cb) {
+  const r = new FileReader();
+  r.onload = ()=>cb(r.result);
+  r.readAsDataURL(file);
+}
+document.getElementById("uploadForm").onsubmit = function(ev) {
+  ev.preventDefault();
+  const acc = getAccountLocal();
+  if(!acc || !acc.username) {
+    msg("You must be logged in.", false);
+    return;
+  }
+  const inputFile = document.getElementById("pmpFile").files[0];
+  const miniFile = document.getElementById("miniatura").files[0];
+  const titulo = document.getElementById("titulo").value.trim();
+  const autor = acc.username;
+  const desc = document.getElementById("desc").value.trim();
+  const tags = document.getElementById("tags").value.trim();
+  msg("");
+  if(!inputFile || !miniFile || !titulo || !desc ) {
+    msg("Please fill in all required fields.");
+    return;
+  }
+  msg("Uploading project, please wait…");
+  fileToBase64(miniFile, function(miniData){
+    fileToBase64(inputFile, function(pmpData){
+      let proj = {
+        id: "penguinmod-" + Date.now() + Math.random().toString(36).slice(2,8),
+        title: titulo,
+        desc: desc,
+        thumb: miniData,
+        pmpName: inputFile.name,
+        author: autor,
+        tags: tags,
+        pmpFile: "",
+        time: Date.now()
+      };
+      subirProyectoViaWorker(proj, pmpData.replace(/^data:.*?base64,/, ""), function(ok, error){
+        msg(ok?"Uploaded! Updating list...":"Error: " + error, ok);
+        if(ok) setTimeout(()=>showSection("home"), 1200);
+      });
+    });
+  });
+};
+function msg(text, ok){
+  const m=document.getElementById("uploadMsg");
+  m.innerText = text || "";
+  m.style.color = ok ? "#45ff89" : "#ffe74c";
+}
+async function subirProyectoViaWorker(proj, pmpB64, cb) {
+  try{
+    const pmp_path = "archivos/" + proj.id + ".pmp";
+    let resPmp = await fetch(WORKER_API, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        path: pmp_path,
+        message: "Subida " + proj.id + ".pmp por " + (proj.author||"?"),
+        content_b64: pmpB64
+      })
+    });
+    let outPmp = await resPmp.json();
+    if(!resPmp.ok) return cb(false, (outPmp.message||outPmp.error||"Error subiendo .pmp"));
+    proj.pmpFile = pmp_path;
+    let lista = [];
+    try{ lista = await workerDownloadProjects(); }catch{}
+    if(!Array.isArray(lista)) lista = [];
+    lista = [proj, ...lista.filter(x=>x.id!==proj.id)];
+    const metaBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(lista,null,1))));
+    let putMeta = await fetch(WORKER_API, {
+      method: "PUT",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        path: METAFILE,
+        content_b64: metaBase64,
+        message: "Actualiza proyectos"
+      })
+    });
+    let outMeta = await putMeta.json();
+    if(!putMeta.ok) return cb(false, (outMeta.message||outMeta.error||"Error actualizando lista de proyectos"));
+    return cb(true,null);
+  }catch(e){ cb(false, e.message||e); }
+}
+async function downloadPMPviaWorker(pmpFile, filename) {
+  try {
+    let resp = await fetch(WORKER_API + "?file=" + encodeURIComponent(pmpFile));
+    if(resp.ok) {
+      let blob = await resp.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(()=>a.remove(),99);
+    }else{
+      alert("Could not download the file.");
+    }
+  }catch(e){
+    alert("Could not download the file.");
+  }
+}
+async function sha256hex(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+showSection("home");
   </script>
 </body>
 </html>
