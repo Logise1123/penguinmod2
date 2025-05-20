@@ -45,9 +45,6 @@
     .carousel-link {color: var(--pm-yellow);text-decoration: none;margin-right: 15px;font-size: .96em;font-weight: 500;transition: color 0.16s;}
     .carousel-link:hover { color: var(--pm-pink);}
     .carousel-scroll {overflow-x: auto;display: flex;align-items: stretch;gap: 18px;padding-bottom: 0.7em;scrollbar-color: var(--pm-blue) #232332;scrollbar-width: thin;}
-    .carousel-scroll::-webkit-scrollbar { height: 8px; }
-    .carousel-scroll::-webkit-scrollbar-thumb { background: var(--pm-yellow); border-radius: 7px; }
-    .carousel-scroll::-webkit-scrollbar-track { background: var(--bg-dark2); }
     .card-project {background: var(--bg-box);border-radius: var(--card-radius);box-shadow: var(--shadow-card);min-width: 170px;max-width: 210px;width: 190px;padding-bottom: 4px;margin: 6px 0 12px 0;display: flex;flex-direction: column;align-items: center;overflow: hidden;cursor: pointer;position: relative;border: 2px solid transparent;transition: box-shadow 0.17s, border 0.2s;}
     .card-project.latest { border-color: var(--pm-blue);}
     .card-project.featured { border-color: var(--pm-pink);}
@@ -93,6 +90,14 @@
       #uploadSec, #homeSec, #accountSec, #loginSec{margin:14px 0;padding: 0.5em 0.2em 1.4em 0.2em;}
       .section-title{font-size:1em;}
     }
+    /* Carrusel oculta scrollbar (opcional) */
+    .carousel-scroll {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .carousel-scroll::-webkit-scrollbar {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -117,21 +122,18 @@
         <div class="carousel-section" id="latestSection">
           <div class="carousel-header">
             <div class="section-title">🌟 Latest featured projects</div>
-            <a class="carousel-link" href="#" onclick="return false;">See more</a>
           </div>
           <div class="carousel-scroll" id="latestCarousel"></div>
         </div>
         <div class="carousel-section" id="featuredSection">
           <div class="carousel-header">
             <div class="section-title" style="color:#ff66c7">💖 Projects people want Featured</div>
-            <a class="carousel-link" href="#" onclick="return false;">See more</a>
           </div>
           <div class="carousel-scroll" id="featuredCarousel"></div>
         </div>
         <div class="carousel-section" id="gamesSection">
           <div class="carousel-header">
             <div class="section-title" style="color:#45ff89">🎮 Projects marked as #games</div>
-            <a class="carousel-link" href="#" onclick="return false;">See more</a>
           </div>
           <div class="carousel-scroll" id="gamesCarousel"></div>
         </div>
@@ -246,6 +248,8 @@
     </div>
   </footer>
   <script>
+    // El mismo JS original
+    // ... Pon aquí todo tu script JS original sin cambios ...
     const WORKER_API = "https://royal-term-e73b.arielcapdevilagarcia.workers.dev/";
     const METAFILE = "proyectos.json";
     const ACCOUNTS_JSON = "accounts.json";
